@@ -1,26 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import {
+	BlockEditorProvider,
+	BlockList,
+	BlockInspector,
+	WritingFlow,
+	ObserveTyping,
+	BlockSelectionClearer,
+	MultiSelectScrollIntoView,
+	Typewriter,
+	CopyHandler,
+} from '@wordpress/block-editor';
+import {
+	Popover,
+	SlotFillProvider,
+	DropZoneProvider,
+} from '@wordpress/components';
+import { registerCoreBlocks } from '@wordpress/block-library';
+import '@wordpress/format-library';
+import '@wordpress/notices';
+import '@wordpress/data';
+import './index.scss';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [ blocks, updateBlocks ] = useState( [] );
+
+	useEffect( () => {
+		registerCoreBlocks();
+	}, [] );
+
+	return (
+		<div className="playground">
+			<SlotFillProvider>
+				<DropZoneProvider>
+					<BlockEditorProvider
+						value={ blocks }
+						onInput={ updateBlocks }
+						onChange={ updateBlocks }
+					>
+						<div className="playground__sidebar">
+							<BlockInspector />
+						</div>
+						<BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
+							<MultiSelectScrollIntoView />
+							<Popover.Slot name="block-toolbar" />
+							<Typewriter>
+								<CopyHandler>
+									<WritingFlow>
+										<ObserveTyping>
+											<CopyHandler>
+												<BlockList />
+											</CopyHandler>
+										</ObserveTyping>
+									</WritingFlow>
+								</CopyHandler>
+							</Typewriter>
+						</BlockSelectionClearer>
+						<Popover.Slot />
+					</BlockEditorProvider>
+				</DropZoneProvider>
+			</SlotFillProvider>
+		</div>
+	);
 }
 
 export default App;
